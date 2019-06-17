@@ -36,8 +36,9 @@ class Data:
                             'max_total_gyro_1': [],
                             'mean_total_acceleration_1': [],
                             'mean_max_diff_total_acceleration_1': []}
+        unique_ids = df.bookingID.unique()
 
-        for i, bookingID in enumerate(df.bookingID.unique()):
+        for i, bookingID in enumerate(unique_ids):
             temp_df = df[df.bookingID == bookingID]
             squared_accelerations = np.array(temp_df[['acceleration_x', 'acceleration_y', 'acceleration_z']]) ** 2
             squared_accelerations = squared_accelerations.sum(axis=1) ** 0.5
@@ -53,7 +54,7 @@ class Data:
         more_additional_stats = {'has_negative_acceleration_x_1': [],
                                  'has_negative_acceleration_y_1': [],
                                  'has_negative_acceleration_z_1': []}
-        for i, bookingID in enumerate(df.bookingID.unique()):
+        for i, bookingID in enumerate(unique_ids):
             temp_df = df[df.bookingID == bookingID]
             more_additional_stats['has_negative_acceleration_x_1'].append(1 if min(temp_df.acceleration_x) < 0 else 0)
             more_additional_stats['has_negative_acceleration_y_1'].append(1 if min(temp_df.acceleration_y) < 0 else 0)
@@ -67,9 +68,13 @@ class Data:
                 df_features[feature] = all_stats[stat][feature]
         df_features = df_features.drop(columns=['mean_max_diff_proportion_gyro_y_1', 'mean_max_diff_proportion_Bearing_1'])
         self.processed_data = df_features
+        self.id_sequence = unique_ids
 
     def get_processed_data(self):
         return self.processed_data
+
+    def get_id_sequence(self):
+        return self.id_sequence
 
 
 def max_change_per_second(dataframe, column):
